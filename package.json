@@ -25,6 +25,7 @@
     "level-test": "~1.6.3"
   },
   "dependencies": {
-    "endpoint": "~0.4.2"
+    "endpoint": "~0.4.2",
+    "readable-stream": "~1.0.27-1"
   }
 }
