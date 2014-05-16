@@ -21,7 +21,8 @@ Currently this is a wrapper around [levelup#createReadStream](https://github.com
 ### Input
 
 ```javascript
-var db = require('level-test')()('level-get-range')
+// level-get-range work directly on leveldown, so no support for encodings for example
+var db = require('level-test')()('level-get-range').db
   , getRange = require('./get-range')(db)
 
 //first put in some data

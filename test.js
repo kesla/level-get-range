@@ -1,6 +1,7 @@
 var assert = require('assert')
 
   , db = require('level-test')()('level-get-range')
+  // use leveldown
   , getRange = require('./get-range')(db)
   , testsThatHasFinished = 0
 
@@ -17,7 +18,7 @@ db.batch([
       , { key: '4',  value: 'four', type: 'put' }
     ]
   , function () {
-      getRange(function (err, range) {
+      getRange({ keyAsBuffer: false, valueAsBuffer: false }, function (err, range) {
         assert.ifError(err)
         assert.deepEqual(
             range
@@ -37,6 +38,7 @@ db.batch([
               gt: '1'
             , lte: '4'
             , keys: false
+            , valueAsBuffer: false
           }
         , function (err, range) {
             assert.ifError(err)
