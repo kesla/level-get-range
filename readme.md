@@ -12,31 +12,31 @@ Get a range from levelup
 npm install level-get-range
 ```
 
-## Note
+## How does it work?
 
-Currently this is a wrapper around [levelup#createReadStream](https://github.com/rvagg/node-levelup#createReadStream) but in the future it will use (if available) the functionality to read a full range from leveldown, falling back to createReadStream.
+If you are running with a leveldown-compatible version that support buffering (as the time of this writing that's only available in the upcoming [leveldown 0.11](https://github.com/rvagg/node-leveldown/pull/91)) it'll use that - otherwise it'll buffer up from the iterator manually and then respond with the buffered array.
 
 ## Example
 
 ### Input
 
 ```javascript
-// level-get-range work directly on leveldown, so no support for encodings for example
-var db = require('level-test')()('level-get-range').db
+var db = require('level-test')()('level-get-range', { valueEncoding: 'json' })
   , getRange = require('./get-range')(db)
 
 //first put in some data
 db.batch([
-        { key: '1',  value: 'one!', type: 'put' }
-      , { key: '1b',  value: 'one again!', type: 'put' }
+        { key: '1',  value: [ 'one!', '1', 'ett' ], type: 'put' }
+      , { key: '1b',  value: [ 'one again!', 'ett igen'], type: 'put' }
       , { key: '2',  value: 'two', type: 'put' }
       , { key: '3',  value: 'three', type: 'put' }
-      , { key: '3b',  value: 'three one more time', type: 'put' }
+      , { key: '3b',  value: { three: 'one more time' }, type: 'put' }
       , { key: '4',  value: 'four', type: 'put' }
     ]
   , function () {
       getRange(function (err, range) {
         console.log('The default is to get the whole database out')
+        console.log('It is pretty neat that custom encodings are supported')
         console.log(range)
 
         getRange({
@@ -54,7 +54,7 @@ db.batch([
               , keys: false
             }
           , function (err, values) {
-              console.log('You can use the same options as a Readable Stream')
+              console.log('You can use the same options as to a Readable Stream')
               console.log(values)
             }
         )
@@ -67,16 +67,21 @@ db.batch([
 
 ```
 The default is to get the whole database out
-[ { key: '1', value: 'one!' },
-  { key: '1b', value: 'one again!' },
+It is pretty neat that custom encodings are supported
+[ { key: '1', value: [ 'one!', '1', 'ett' ] },
+  { key: '1b', value: [ 'one again!', 'ett igen' ] },
   { key: '2', value: 'two' },
   { key: '3', value: 'three' },
-  { key: '3b', value: 'three one more time' },
+  { key: '3b', value: { three: 'one more time' } },
   { key: '4', value: 'four' } ]
 If it is outside of the range you get an empty array
 []
-You can use the same options as a Readable Stream
-[ 'one again!', 'two', 'three', 'three one more time', 'four' ]
+You can use the same options as to a Readable Stream
+[ [ 'one again!', 'ett igen' ],
+  'two',
+  'three',
+  { three: 'one more time' },
+  'four' ]
 ```
 
 ## Licence
