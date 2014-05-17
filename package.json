@@ -4,7 +4,7 @@
   "description": "Get a range from levelup",
   "main": "get-range.js",
   "scripts": {
-    "test": "node test/runner.js"
+    "test": "tape test/runner.js"
   },
   "repository": {
     "type": "git",
