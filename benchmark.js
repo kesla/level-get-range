@@ -4,7 +4,7 @@ var seriesify = require('seriesify')
       var data = []
         , i
 
-      for(i = 0; i < 10000; ++i)
+      for(i = 0; i < 100000; ++i)
         data.push({
             key: i + 'foo'
           , value: 'beep boop'
@@ -22,7 +22,6 @@ var seriesify = require('seriesify')
           data.push(chunk)
         })
         .once('end', function () {
-          console.log(data.length)
           console.timeEnd('stream')
           callback(null, data)
         })

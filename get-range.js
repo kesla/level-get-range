@@ -6,31 +6,9 @@ var extend = require('xtend')
 
   , defaultOptions = { keys: true, values: true }
 
-  , makeDataFactory = function (options) {
-    var makeKeyValueData = function (key, value) {
-          return {
-              key: util.decodeKey(key, options)
-            , value: util.decodeValue(value, options)
-          }
-        }
-      , makeKeyData = function (key) {
-          return util.decodeKey(key, options)
-        }
-      , makeValueData = function (_, value) {
-          return util.decodeValue(value, options)
-        }
-      , makeNoData = function () { return null }
-
-    return options.keys && options.values
-      ? makeKeyValueData : options.keys
-        ? makeKeyData : options.values
-          ? makeValueData : makeNoData
-  }
-
   , init = function (db, options, callback) {
       var iterator = db.db.iterator(options)
         , range = []
-        , makeData = makeDataFactory(options)
         , read = function (err, key, value) {
             if (err) return callback(err)
 
@@ -42,7 +20,18 @@ var extend = require('xtend')
               return
             }
 
-            range.push(makeData(key, value))
+            if (options.keys && options.values) {
+              range.push({
+                  key: util.decodeKey(key, options)
+                , value: util.decodeValue(value, options)
+              })
+            } else if (options.keys) {
+              range.push(util.decodeKey(key, options))
+            } else if (options.values) {
+              range.push(util.decodeValue(value, options))
+            } else {
+              range.push(null)
+            }
 
             iterator.next(read)
           }
