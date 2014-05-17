@@ -4,7 +4,7 @@
   "description": "Get a range from levelup",
   "main": "get-range.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test/runner.js"
   },
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
     "seriesify": "^1.2.2"
   },
   "dependencies": {
-    "endpoint": "~0.4.2",
-    "readable-stream": "~1.0.27-1"
+    "xtend": "^3.0.0",
+    "levelup-util": "^1.0.0"
   }
 }
