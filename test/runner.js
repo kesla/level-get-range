@@ -1,4 +1,22 @@
-var level = require('level-test')()
+var path = require('path')
 
-require('./simple-test.js')(level)
-require('./encoding-test.js')(level)
+  , levelup = require('levelup')
+  , extend = require('xtend')
+  , rimraf = require('rimraf')
+  , tmpdir = require('os').tmpdir()
+
+  , memdownFactory = function (name, opts) {
+      return levelup(name, extend(opts, { db: require('memdown') }))
+    }
+  , levelupFactory = function (name, opts) {
+      var dir = path.join(tmpdir, name)
+
+      rimraf.sync(dir)
+
+      return levelup(dir, extend(opts, { db: require('leveldown') }))
+    }
+
+
+require('./simple-test.js')('memdown', memdownFactory)
+require('./simple-test.js')('leveldown', levelupFactory)
+require('./encoding-test.js')('leveldown', levelupFactory)
