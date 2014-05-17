@@ -31,15 +31,32 @@ var extend = require('xtend')
       var iterator = db.db.iterator(options)
         , range = []
         , makeData = makeDataFactory(options)
+        , finish = function () {
+            iterator.end(function (err) {
+              if (err) return callback(err)
+              callback(null, range)
+            })
+          }
+        , readBuffer = function (err, array) {
+            if (array[array.length - 1] === null) {
+              array.length = array.length - 1
+              range = range.concat(array.map(function (obj) {
+                return makeData(obj.key, obj.value)
+              }))
+              return finish()
+            }
+
+            range = range.concat(array.map(function (obj) {
+              return makeData(obj.key, obj.value)
+            }))
+            iterator.binding.next(readBuffer)
+
+          }
         , read = function (err, key, value) {
             if (err) return callback(err)
 
             if (!arguments.length) {
-              iterator.end(function (err) {
-                if (err) return callback(err)
-                callback(null, range)
-              })
-              return
+              return finish()
             }
 
             range.push(makeData(key, value))
@@ -47,7 +64,10 @@ var extend = require('xtend')
             iterator.next(read)
           }
 
-      iterator.next(read)
+      if (iterator.binding)
+        iterator.binding.next(readBuffer)
+      else
+        iterator.next(read)
     }
   , getRange = function (db) {
       return function (options, callback) {

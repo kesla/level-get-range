@@ -92,4 +92,25 @@ module.exports = function (name, factory) {
     )
 
   })
+
+  test('low buffering limit (in leveldown)', function (t) {
+    getRange({
+          highWaterMark: 5
+        }
+      , function (err, range) {
+        t.error(err)
+        t.deepEqual(
+            range
+          , [
+                { key: '1',  value: 'one!' }
+              , { key: '1b', value: 'one again!' }
+              , { key: '2',  value: 'two' }
+              , { key: '3',  value: 'three' }
+              , { key: '3b', value: 'three one more time' }
+              , { key: '4',  value: 'four' }
+            ]
+        )
+        t.end()        }
+      )
+  })
 }
