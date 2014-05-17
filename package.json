@@ -22,7 +22,8 @@
   },
   "homepage": "https://github.com/kesla/level-get-range",
   "devDependencies": {
-    "level-test": "~1.6.3"
+    "level-test": "~1.6.3",
+    "seriesify": "^1.2.2"
   },
   "dependencies": {
     "endpoint": "~0.4.2",
