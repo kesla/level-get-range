@@ -1,6 +1,6 @@
 {
   "name": "level-get-range",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Get a range from levelup",
   "main": "get-range.js",
   "scripts": {
