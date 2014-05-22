@@ -1,5 +1,10 @@
-var db = require('level-test')()('level-get-range', { valueEncoding: 'json' })
+var level = require('level-test')()
+  , subLevel = require('level-sublevel')
+
+  , db = level('level-get-range', { valueEncoding: 'json' })
+  , sub = subLevel(db).sublevel('test')
   , getRange = require('./get-range')(db)
+  , subRange = require('./get-range')(sub)
 
 //first put in some data
 db.batch([
@@ -33,6 +38,19 @@ db.batch([
           , function (err, values) {
               console.log('You can use the same options as to a Readable Stream')
               console.log(values)
+
+              sub.batch([
+                      { key: '5', value: 'five', type: 'put' }
+                    , { key: '6', value: 'six', type: 'put' }
+                    , { key: '7', value: 'seven', type: 'put' }
+                  ]
+                , function () {
+                    subRange(function (err, range) {
+                      console.log('builtin support for sublevel!')
+                      console.log(range)
+                    })
+                  }
+              )
             }
         )
       })

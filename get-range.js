@@ -27,13 +27,28 @@ var extend = require('xtend')
           ? makeValueData : makeNoData
   }
 
-  , init = function (db, options, callback) {
-      var iterator = db.db.iterator(options)
+  , init = function (db, root, options, callback) {
+      var iterator = root.db.iterator(options)
         , range = []
         , makeData = makeDataFactory(options)
         , finish = function () {
             iterator.end(function (err) {
               if (err) return callback(err)
+
+              if (db.prefix) {
+                var p = db.prefix()
+
+                if (options.values === false) {
+                  range = range.map(function (key) {
+                    return key.slice(p.length)
+                  })
+                } else if (!(options.keys === false)) {
+                  range.forEach(function (obj) {
+                    obj.key = obj.key.slice(p.length)
+                  })
+                }
+              }
+
               callback(null, range)
             })
           }
@@ -69,23 +84,43 @@ var extend = require('xtend')
       else
         iterator.next(read)
     }
+  , getRoot = function (db) {
+      if(!db._parent) return db
+      return getRoot(db._parent)
+    }
+  , noop = function () {}
   , getRange = function (db) {
+      var root = getRoot(db)
+        , prefix = noop
+
+      if (db.prefix) {
+        prefix = function (options) {
+          ['end', 'gt', 'gte', 'lt', 'lte'].forEach(function (key) {
+            if (options[key] !== undefined)
+              options[key] = db.prefix(options[key])
+          })
+          options.start = db.prefix(options.start)
+        }
+      }
+
       return function (options, callback) {
         if (typeof(options) === 'function') {
           callback = options
           options = {}
         }
 
-        options = extend(db.options, defaultOptions, options)
+        options = extend(root.options, defaultOptions, options)
+
+        prefix(options)
 
         options.keyAsBuffer = util.isKeyAsBuffer(options)
         options.valueAsBuffer = util.isValueAsBuffer(options)
 
-        if (db.isOpen())
-          init(db, options, callback)
+        if (root.isOpen())
+          init(db, root, options, callback)
         else
-          db.once('ready', function () {
-            init(db, options, callback)
+          root.once('ready', function () {
+            init(db, root, options, callback)
           })
       }
     }

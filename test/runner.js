@@ -18,5 +18,8 @@ var path = require('path')
 
 
 require('./simple-test.js')('memdown', memdownFactory)
-require('./simple-test.js')('leveldown-0.11-wip', levelupFactory)
+require('./simple-test.js')('memdown', memdownFactory)
+
 require('./encoding-test.js')('leveldown-0.11-wip', levelupFactory)
+require('./simple-test.js')('leveldown-0.11-wip', levelupFactory)
+require('./sublevel-test.js')('leveldown-0.11-wip-sublevel', levelupFactory)

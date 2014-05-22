@@ -27,7 +27,9 @@
     "levelup": "^0.18.3",
     "memdown": "^0.10.0",
     "leveldown": "https://github.com/rvagg/node-leveldown/archive/0.11-wip.tar.gz",
-    "tape": "^2.13.1"
+    "tape": "^2.13.1",
+    "level-sublevel": "~5.2.0",
+    "level-test": "~1.6.3"
   },
   "dependencies": {
     "xtend": "^3.0.0",
