@@ -4,7 +4,9 @@ module.exports = function (name, factory) {
     , sub = db.sublevel('beep-boop')
     , sub2 = db.sublevel('chicka')
     , sub3 = db.sublevel('abc')
+    , sub4 = db.sublevel('foobar', { valueEncoding: 'json' })
     , getRange = require('../get-range')(sub)
+    , getRange2 = require('../get-range')(sub4)
 
   test('setup data (running tests using ' + name + ')', function (t) {
     sub.batch([
@@ -117,5 +119,26 @@ module.exports = function (name, factory) {
         )
         t.end()        }
       )
+  })
+
+  test('custom valueEncoding in sublevel', function (t) {
+    sub4.put('hello', ['foo', 'bar'], function () {
+      getRange2(function (err, range) {
+        t.error(err)
+        t.deepEqual(
+            range
+          , [ { key: 'hello', value: ['foo', 'bar'] } ]
+        )
+
+        getRange2({ valueEncoding: 'utf8' }, function (err, range) {
+          t.error(err)
+          t.deepEqual(
+              range
+            , [ { key: 'hello', value: '["foo","bar"]' } ]
+          )
+          t.end()
+        })
+      })
+    })
   })
 }

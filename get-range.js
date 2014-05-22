@@ -110,7 +110,7 @@ var extend = require('xtend')
           options = {}
         }
 
-        options = extend(root.options, defaultOptions, options)
+        options = extend(root.options, db.options, defaultOptions, options)
 
         prefix(options)
 
