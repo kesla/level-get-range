@@ -1,6 +1,9 @@
 module.exports = function (name, factory) {
   var test = require('tape')
-    , sub = require('level-sublevel')(factory('sublevel', {})).sublevel('beep-boop')
+    , db = require('level-sublevel')(factory('sublevel', {}))
+    , sub = db.sublevel('beep-boop')
+    , sub2 = db.sublevel('chicka')
+    , sub3 = db.sublevel('abc')
     , getRange = require('../get-range')(sub)
 
   test('setup data (running tests using ' + name + ')', function (t) {
@@ -11,6 +14,8 @@ module.exports = function (name, factory) {
           , { type: 'put', key: '3',  value: 'three' }
           , { type: 'put', key: '3b', value: 'three one more time' }
           , { type: 'put', key: '4',  value: 'four' }
+          , { type: 'put', key: '5',  value: 'five', prefix: sub2 }
+          , { type: 'put', key: '6',  value: 'six', prefix: sub3 }
         ]
         , t.end.bind(t)
     )

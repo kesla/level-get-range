@@ -95,11 +95,12 @@ var extend = require('xtend')
 
       if (db.prefix) {
         prefix = function (options) {
-          ['end', 'gt', 'gte', 'lt', 'lte'].forEach(function (key) {
+          ['gt', 'gte', 'lt', 'lte'].forEach(function (key) {
             if (options[key] !== undefined)
               options[key] = db.prefix(options[key])
           })
           options.start = db.prefix(options.start)
+          options.end = db.prefix(options.end || db.options.sep)
         }
       }
 
